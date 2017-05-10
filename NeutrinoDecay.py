@@ -57,11 +57,69 @@ def nv(E,k, zmax):
 	
 
 	
-Es=np.power(10., np.linspace(2,10,100))
+Es=np.power(10., np.linspace(0.,4.,100))
 
-nvs=nv(3,10e-2,Es)
+nvs=nv(Es,1e-2,3.)
+nvs2=nv(Es,1.,3.)
+nvs3=nv(Es,1e4,3)
+nvs4=nv(Es,1e-17,3)
+#plt.plot(Es,nvs,color='red')
+plt.plot(Es,nvs2, color='blue')
+#plt.plot(Es,nvs3, color='green')
+plt.plot(Es, nvs4, color='purple')
+plt.xscale('log')
+plt.yscale('log')
+plt.show()
 
-plt.plot(Es,nvs)
+
+
+
+def c(theta):
+	return math.cos(theta)
+
+
+def s(theta):
+	return math.sin(theta)
+
+
+theta12=0.5764
+theta13=0.1463
+theta23=0.7223
+
+def v1(ve,vm,vt):
+	return ve*c(theta13)*c(theta12)+vm*(-c(theta23)*s(theta12)-s(theta23)*c(theta12)*s(theta13))+vt*(s(theta23)*s(theta12)-c(theta23)*c(theta12)*s(theta13)) 
+
+def v2(ve,vm,vt):
+	return ve*c(theta13)*s(theta12)+vm*(c(theta23)*c(theta12)-s(theta23)*s(theta12)*s(theta13))+vt*(-s(theta23)*s(theta12)-c(theta23)*c(theta12)*s(theta13))
+
+def v3(ve,vm,vt):
+	return ve*s(theta13)+vm*c(theta13)*s(theta23)+vt*c(theta13)*c(theta23)
+
+
+m1=abs(v1(1.,2.,0.))
+m2=abs(v2(1.,2.,0.))
+m3=abs(v3(1.,2.,0.))
+
+print m1, m2, m3
+
+v1E=m1*nvs4
+v2E=m2*nvs2
+v3E=m3*nvs2
+
+veE=abs(v1E*c(theta13)*c(theta12)+v2E*c(theta13)*s(theta12)+v3E*s(theta13))
+vmE=abs(v1E*(-c(theta23)*s(theta12)-s(theta23)*c(theta12)*s(theta13))+v2E*(c(theta23)*c(theta12)-s(theta23)*s(theta12)*s(theta13))+v3E*c(theta13)*s(theta23))
+vtE=abs(v1E*(s(theta23)*s(theta12)-c(theta23)*c(theta12)*s(theta13))+v2E*(-s(theta23)*c(theta12)-c(theta23)*s(theta12)*s(theta13))+v3E*c(theta13)*c(theta23))
+
+
+
+v_e,=plt.plot(Es,veE,color='red',label='ve')
+v_m,=plt.plot(Es,vmE,color='green', label='vm')
+v_t,=plt.plot(Es,vtE,color='blue', label='vt')
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel('$E[TeV]$', fontsize=15)
+plt.ylabel('$Flux[s^{-1}Mpc^{-2}TeV^{-1}]$', fontsize=15)
+plt.legend((v_e, v_m, v_t),('ve','vm','vt'))
 plt.show()
 
 #for testing, generate 100 redshifts at equal logarithmic intervals between 1.-3 and 1.e+1
