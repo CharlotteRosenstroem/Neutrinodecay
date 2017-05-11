@@ -42,7 +42,7 @@ def Di(z, k, E, LH=3.89e3, OM=0.3089, OL=0.6911):
 
 
 def f(z, a=3.4 , b=-0.3 , c=-3.5 , B=5000 , C=9 , eta=-10 , LH=3.89e3, OM=0.3089, OL=0.6911):
-	return ((1+z)**(a*eta)+((1+z)/B)**(b*eta)+((1+z)/C)**(c*eta))**(1/eta)/(4*math.pi*LZ(z))
+	return ((1+z)**(a*eta)+((1+z)/B)**(b*eta)+((1+z)/C)**(c*eta))**(1/eta)/(4*math.pi*LZ(z)**2)
 
 
 
@@ -62,19 +62,19 @@ Es=np.power(10., np.linspace(0.,5.,100))
 """
 
 
-def nv(k,Emin,Emax,zmax):
+def nv(k,zmax,Emin,Emax):
 	def integrand(z,k,E):
 		return f(z)*Di(z,k,E)*(1+z)**(-2)*E**(-2)
-	def integrator(k,E,zmax=zmax):
-		return integrate.quad(integrand,0,zmax, args=(k,E))[0]
-	def integratorE(k,Emin=Emin,Emax=Emax,zmax=zmax):
-		return integrate.quad(integrator,Emin, Emax, args=(k,zmax))[0]	
+	def integrator(k,z,Emin=Emin,Emax=Emax):
+		return integrate.quad(integrand,Emin, Emax, args=(k,z))[0]
+	def integratorZ(k,zmax=zmax,Emin=Emin,Emax=Emax):
+		return integrate.quad(integrator,0, zmax, args=(k,Emin,Emax))[0]	
 	if np.isscalar(k):
-		return integratorE(k,Emin,Emax,zmax)
+		return integratorZ(k,zmax,Emin,Emax)
 	else:
-		return np.asarray(map(integratorE, k))
+		return np.asarray(map(integratorZ, k))
 
-print nv(1000,10.,10000.,3.)
+print nv(1000,3.,10.,10000.)
 
 def c(theta):
 	return math.cos(theta)
@@ -105,15 +105,15 @@ m3=v3(1.,2.,0.)
 #print m1, m2, m3
 
 
-nvs=nv(1e-17,10.,10000.,3.)
+nvs=nv(1e-17,3.,10.,10000.)
 
 v1E=m1*nvs
 
 def v2E(k):
-	return m2*nv(k,10.,10000.,3.)
+	return m2*nv(k,3.,10.,10000.)
 
 def v3E(k):
-	return m3*nv(k,10.,10000.,3.)
+	return m3*nv(k,3.,10.,10000.)
 
 def veE(k):
 	return v1E*c(theta13)*c(theta12)+v2E(k)*c(theta13)*s(theta12)-v3E(k)*abs(s(theta13)*cmath.exp(-1j*1.35*math.pi))
