@@ -83,7 +83,7 @@ def nv(E,k,L,zmax):
 	else:
 		return np.asarray(map(integrator, E))
 		
-Es=np.power(10., np.linspace(0.,5.,100))
+Es=np.power(10., np.linspace(0.,5,100))
 Ls=0.624150913e38
 
 #
@@ -128,9 +128,9 @@ def v3(ve,vm,vt):
 	return ve*s(theta13)*cmath.exp(-1j*math.pi)+vm*c(theta13)*s(theta23)+vt*c(theta13)*c(theta23)
 
 
-m1=v1(1.,2.,0.)
-m2=v2(1.,2.,0.)
-m3=v3(1.,2.,0.)
+m1=v1(1.,1.,1.)
+m2=v2(1.,1.,1.)
+m3=v3(1.,1.,1.)
 
 print m1, m2, m3
 
@@ -146,7 +146,7 @@ def v3E(k):
 	return m3.real*nv(Es,k,Ls,3.)
 
 def veE(k):
-	return v1E*c(theta13)*c(theta12)+v2E(k)*c(theta13)*s(theta12)-v3E(k)*s(theta13)*cmath.exp(-1j*math.pi)
+	return v1E*c(theta13)*c(theta12)+v2E(k)*c(theta13)*s(theta12)+v3E(k)*s(theta13)*cmath.exp(-1j*math.pi)
 
 
 def vmE(k):
@@ -154,24 +154,36 @@ def vmE(k):
 
 
 def vtE(k):
-	return v1E*(s(theta23)*s(theta12)-c(theta23)*c(theta12)*s(theta13)*cmath.exp(1j*math.pi))-v2E(k)*(s(theta23)*c(theta12)+c(theta23)*s(theta12)*s(theta13)*cmath.exp(1j*math.pi))+v3E(k)*c(theta13)*c(theta23)
+	return -v1E*(s(theta23)*s(theta12)-c(theta23)*c(theta12)*s(theta13)*cmath.exp(1j*math.pi))+v2E(k)*(s(theta23)*c(theta12)+c(theta23)*s(theta12)*s(theta13)*cmath.exp(1j*math.pi))+v3E(k)*c(theta13)*c(theta23)
 
 
 #
 """
-print v1E, v2E(1), v3E(1)
-
-v2E_1=v2E(1)
-v3E_1=v3E(1)
+R1=vmE(1e2)/veE(1e2)
+R2=vtE(1e2)/veE(1e2)
 
 plt.figure(1)
-v_1,=plt.plot(Es,v1E,color='red',label='v1')
+r_1,=plt.plot(Es,R1,color='red',label='R1')
+r_2,=plt.plot(Es,R2,color='blue',label='R2')
+plt.xscale('log')
+plt.yscale('log')
+plt.show()
+
+
+#print v1E, v2E(1), v3E(1)
+
+v1E_1=v1E/3.08567758e24**2
+v2E_1=v2E(1)/3.08567758e24**2
+v3E_1=v3E(1)/3.08567758e24**2
+
+plt.figure(1)
+v_1,=plt.plot(Es,v1E_1,color='red',label='v1')
 v_2,=plt.plot(Es,v2E_1,color='green', label='v2')
 v_3,=plt.plot(Es,v3E_1,color='blue', label='v3')
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('$E[TeV]$', fontsize=15)
-plt.ylabel('$flux[s^{-1}Mpc^{-2}TeV^{-1}]$', fontsize=15)
+plt.ylabel('$flux[s^{-1}cm^{-2}TeV^{-1}]$', fontsize=15)
 plt.legend((v_1, v_2, v_3),('v1','v2','v3'))
 plt.title('v1 stable, v2 and v3 lifetime:1 s/ev')
 plt.savefig('k1_v.png')
@@ -210,9 +222,9 @@ plt.title('v1 stable, v2 and v3 lifetime: k^{-1}')
 plt.show()
 """
 
-veE1=veE(1)
-vmE1=vmE(1)
-vtE1=vtE(1)
+veE1=veE(1)/3.08567758e24**2
+vmE1=vmE(1)/3.08567758e24**2
+vtE1=vtE(1)/3.08567758e24**2
 
 plt.figure(1)
 v_e,=plt.plot(Es,veE1,color='red',label='ve')
@@ -221,14 +233,14 @@ v_t,=plt.plot(Es,vtE1,color='blue', label='vt')
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('$E[TeV]$', fontsize=15)
-plt.ylabel('$flux[s^{-1}Mpc^{-2}TeV^{-1}]$', fontsize=15)
+plt.ylabel('$flux[s^{-1}cm^{-2}TeV^{-1}]$', fontsize=15)
 plt.legend((v_e, v_m, v_t),('ve','vm','vt'))
 plt.title('v1 stable, v2 and v3 lifetime:1 s/ev')
 plt.savefig('k1.png')
 
-veE2=veE(1e-2)
-vmE2=vmE(1e-2)
-vtE2=vtE(1e-2)
+veE2=veE(1e-2)/3.08567758e24**2
+vmE2=vmE(1e-2)/3.08567758e24**2
+vtE2=vtE(1e-2)/3.08567758e24**2
 
 plt.figure(2)
 v_e2,=plt.plot(Es,veE2,color='red',label='ve')
@@ -237,14 +249,14 @@ v_t2,=plt.plot(Es,vtE2,color='blue', label='vt')
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('$E[TeV]$', fontsize=15)
-plt.ylabel('$flux[s^{-1}Mpc^{-2}TeV^{-1}]$', fontsize=15)
+plt.ylabel('$flux[s^{-1}cm^{-2}TeV^{-1}]$', fontsize=15)
 plt.legend((v_e2, v_m2, v_t2),('ve','vm','vt'))
 plt.title('v1 stable, v2 and v3 lifetime: 100 s/eV')
 plt.savefig('k100.png')
 
-veE3=veE(1e-4)
-vmE3=vmE(1e-4)
-vtE3=vtE(1e-4)
+veE3=veE(1e-4)/3.08567758e24**2
+vmE3=vmE(1e-4)/3.08567758e24**2
+vtE3=vtE(1e-4)/3.08567758e24**2
 
 plt.figure(3)
 v_e3,=plt.plot(Es,veE3,color='red',label='ve')
@@ -253,15 +265,15 @@ v_t3,=plt.plot(Es,vtE3,color='blue', label='vt')
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('$E[TeV]$', fontsize=15)
-plt.ylabel('$flux[s^{-1}Mpc^{-2}TeV^{-1}]$', fontsize=15)
+plt.ylabel('$flux[s^{-1}cm^{-2}TeV^{-1}]$', fontsize=15)
 plt.legend((v_e3, v_m3, v_t3),('ve','vm','vt'))
 plt.title('v1 stable, v2 and v3 lifetime: 10000 s/eV')
 plt.savefig('k10000.png')
 
 
-veE4=veE(1e4)
-vmE4=vmE(1e4)
-vtE4=vtE(1e4)
+veE4=veE(1e4)/3.08567758e24**2
+vmE4=vmE(1e4)/3.08567758e24**2
+vtE4=vtE(1e4)/3.08567758e24**2
 
 
 plt.figure(4)
@@ -271,7 +283,7 @@ v_t4,=plt.plot(Es,vtE4,color='blue', label='vt')
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('$E[TeV]$', fontsize=15)
-plt.ylabel('$flux[s^{-1}Mpc^{-2}TeV^{-1}]$', fontsize=15)
+plt.ylabel('$flux[s^{-1}cm^{-2}TeV^{-1}]$', fontsize=15)
 plt.legend((v_e4, v_m4, v_t4),('ve','vm','vt'))
 plt.title('v1 stable, v2 and v3 lifetime: 0.0001 s/eV')
 plt.savefig('k00001.png')
